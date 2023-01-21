@@ -1,0 +1,10 @@
+package cdo.Persistencia;
+
+public class GestorCatalogoUsuarios {
+
+	public void obtieneDatosUsuarios() {
+		
+		
+	}
+	
+}

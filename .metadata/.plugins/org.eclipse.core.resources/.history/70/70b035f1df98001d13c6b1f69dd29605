@@ -1,0 +1,54 @@
+function validaInformacion(){
+	var txtUsu = $("#txtUsu").val()
+	var txtPass = $("#txtPass").val()
+	var vista = $("#vista").val()
+	$.ajax({			
+		url :'ServidorUsuario',                               // URL al que vamos a hacer el pedido
+		data : "vista="+vista+"&txtUsu="+txtUsu+"&txtPass="+txtPass,  // Paso de parametros, 
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', // formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{    	    		
+			var ext = resp.EXTIMG;
+			console.log("rsp ExtImg: "+ext)
+			extImg = ext;
+			$("#idEcommerceAct").val(extImg)
+			$("#extImgCarga").text(" Tipo de Imagen: "+ extImg)
+			$("#articuloActivar").text('"'+data.numParte+'"')
+			muestraCargaImagen();  
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{								
+			alert("Error al consultar extension Img.")
+			return false;			
+			// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+		} 
+	}); 
+}
+function cargaCatalogoUsuarios(){
+	$.ajax({			
+		url :'CatalogoImagen',                               // URL al que vamos a hacer el pedido
+		data : "vista=consultaEXT&extensionBuscar="+id_ecommerce,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', 
+		 beforeSend: function () {
+             $('body').addClass('loading'); //Agregamos la clase loading al body
+         },// formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{    	    		
+			var ext = resp.EXTIMG;
+			console.log("rsp ExtImg: "+ext)
+			extImg = ext;
+			$("#idEcommerceAct").val(extImg)
+			$("#extImgCarga").text(" Tipo de Imagen: "+ extImg)
+			$("#articuloActivar").text('"'+data.numParte+'"')
+			muestraCargaImagen();  
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{								
+			alert("Error al consultar extension Img.")
+			return false;			
+			// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+		} 
+	});  
+}

@@ -1,0 +1,72 @@
+package cdo.Web;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class ServidorUsuarioServlet
+ */
+public class ServidorUsuarioServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ServidorUsuarioServlet() {
+        super();
+        
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(true);	
+		String vista = request.getParameter("vista");
+		GeneraRespuesta(request,response,session,vista);
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+	
+	private void GeneraRespuesta(HttpServletRequest request, HttpServletResponse response, HttpSession session,	String vista)
+	{
+		if(vista.equals("Inicio.jsp")) {
+			String txtUsu = request.getParameter("txtUsu");
+			String txtPass = request.getParameter("txtPass");
+			System.out.println("txtUsu: "+txtUsu + " txtPass: "+txtPass); 
+			if(txtUsu.equals("Javier") && txtPass.equals("123456")) {
+				System.out.println("Entra");
+				RedireccionarVista(request, response, "CatalogoUsuarios.jsp");
+			}else {
+				RedireccionarVista(request, response, "Inicio.jsp");
+			}
+			
+		}else {
+			
+			RedireccionarVista(request, response, "Inicio.jsp");
+		}
+		
+	}
+	
+	public void RedireccionarVista(HttpServletRequest request, HttpServletResponse response, String vista)
+	{
+		try
+		{
+			RequestDispatcher rdIndex = request.getRequestDispatcher("jsp/" + vista);			    	
+		    rdIndex.forward(request, response);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Error al re-direccionar vista." + ex.getMessage().toString());
+		}
+	}
+
+}

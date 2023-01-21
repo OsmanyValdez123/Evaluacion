@@ -1,0 +1,2424 @@
+function muestraFiltroCatalogoImg(){
+	document.getElementById('cargando').style.display = 'block';
+	$("#divMarcadoCatalogoImg").css("visibility", "visible");
+	document.getElementById('cargando').style.display = 'none';
+}
+
+function ocultarModalMarcadoCatalogoImg(){
+	document.getElementById('cargando').style.display = 'block';
+	$("#divMarcadoCatalogoImg").css("visibility", "hidden");
+	document.getElementById('cargando').style.display = 'none';
+}
+
+function validaFiltroCta(){
+	var articulo = $("#txtArticulo").val();
+	var proveedor = $("#txtProveedor").val();
+	var gpo = $("#txtGpo").val();
+	if(articulo == '' && proveedor == '' && gpo == ''){
+		alert("Ingrese al menos un Campo para la busqueda.")
+		return false;
+	}else{
+		if(articulo == ''){
+			articulo = "0";
+		}
+		if(proveedor == ''){
+			proveedor = "0";
+		}
+		if(gpo == ''){
+			gpo = "0";
+		}
+		console.log("articulo: "+ articulo + " proveedor: "+proveedor+ " gpo: "+ gpo);
+		var parametro = "vista=validaArticulo&articulo="+articulo+"&proveedor="+proveedor+"&gpo="+gpo;
+		$.ajax({
+			type: 'POST',				 // tipo de request que estamos generando
+	        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+	        data: parametro,    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };                 
+			dataType : 'Json', 
+			beforeSend: function () {
+				$('body').addClass('loading'); //Agregamos la clase loading al body
+	        },// formato de transmición de datos que recibimos del server
+			success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+			{ 	
+				$('body').removeClass('loading');	
+				document.getElementById('cargando').style.display = 'none';  
+				return true;
+			},
+			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+			{		
+				bootbox.alert({
+				    message: 'Error al dirigie a Alta Imagenes.',
+				    size: 'small'
+				});
+				return false;
+							
+			} 
+		});
+	}
+}
+
+function EnviaAltaImagenes(){
+	document.getElementById('cargando').style.display = 'block';
+	$.ajax({
+		type: 'POST',				 // tipo de request que estamos generando
+        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+        data: "vista=EnviaAltaImagen&envia=CargaImagen.jsp",    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };
+        cache: false,
+        processData:false,                  
+		dataType : 'Json', 
+		beforeSend: function () {
+			$('body').addClass('loading'); //Agregamos la clase loading al body
+        },// formato de transmición de datos que recibimos del server
+		success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+		{ 	
+			$('body').removeClass('loading');	
+			document.getElementById('cargando').style.display = 'none';    		        			     
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{		
+			bootbox.alert({
+			    message: 'Error al dirigie a Alta Imagenes.',
+			    size: 'small'
+			});
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+						
+		} 
+	});
+}
+
+function cargaCatalogoImg(){
+	var articuloBuscar = $("#articuloFiltro").val();
+	var proveedorBuscar = $("#proveedorFiltro").val();
+	var gpoBuscar = $("#gpoFiltro").val();
+	console.log("articuloBuscar: " + articuloBuscar + " proveedorBuscar: " + proveedorBuscar +" gpoBuscar: " + gpoBuscar)
+	document.getElementById('cargando').style.display = 'block';
+	$.ajax({
+		type: 'POST',				 // tipo de request que estamos generando
+        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+        data: "vista=MuestraCatalogoImag&articuloBuscar="+articuloBuscar+"&proveedorBuscar="+proveedorBuscar+"&gpoBuscar="+gpoBuscar,    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };
+        //cache: false,
+        //processData:false,                  
+		dataType : 'Json', 
+		beforeSend: function () {
+			$('body').addClass('loading'); //Agregamos la clase loading al body
+        },// formato de transmición de datos que recibimos del server
+		success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+		{ 	
+			$('body').removeClass('loading');	
+			document.getElementById('cargando').style.display = 'none';
+			var catImagenes = json.LISTA;
+			console.log("LISTA: "+catImagenes.length)
+			if(catImagenes.length > 0){
+				cargaGridImg(catImagenes);
+			}else{
+				alert("NO SE ENCONTRARON REGISTROS DEL ARTICULO INGRESADO.")
+			}
+			
+	    		        			     
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{		
+			bootbox.alert({
+			    message: 'No existen registros de Imagenes de Articulos.',
+			    size: 'small'
+			});
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+						
+		} 
+	});
+	
+	
+}
+
+function cargaCatalogoProovedorImg(){	
+	document.getElementById('cargando').style.display = 'block';
+	$.ajax({
+		type: 'POST',				 // tipo de request que estamos generando
+        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+        data: "vista=MuestraCatalogoProveedorSinImg",    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };
+        //cache: false,
+        //processData:false,                  
+		dataType : 'Json', 
+		beforeSend: function () {
+			$('body').addClass('loading'); //Agregamos la clase loading al body
+        },// formato de transmición de datos que recibimos del server
+		success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+		{ 	
+			$('body').removeClass('loading');	
+			document.getElementById('cargando').style.display = 'none';
+			var catImagenes = json.LISTAPROVEEDOR;
+			console.log("LISTAPROVEEDOR: "+catImagenes.length)
+			if(catImagenes.length > 0){
+				cargaGridImgProveedor(catImagenes);
+			}else{
+				alert("NO SE ENCONTRARON REGISTROS.")
+			}	    		        			     
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{		
+			bootbox.alert({
+			    message: 'No existen registros de Imagenes de Articulos.',
+			    size: 'small'
+			});
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+						
+		} 
+	});
+}
+
+function cargaGridImgProveedor(catalogoImgProv){
+	var db =
+    {
+        loadData: function (filter)/** seccion de filtros **/
+        {
+            return $.grep(catalogoImgProv, function (cat) {
+                return  (!filter.nombreCorto.toUpperCase() || cat.nombreCorto.toUpperCase() === filter.nombreCorto.toUpperCase() || cat.nombreCorto.toUpperCase() == filter.nombreCorto.toUpperCase() || cat.nombreCorto.toUpperCase().includes(filter.nombreCorto.toUpperCase()))
+                 		
+                 		
+            });
+        },
+     };
+	 window.db = db;
+     db.catalogoImgProv;
+     
+     $(function ()
+     {
+    	 $("#gridCatalogo").jsGrid({
+    		 width: "100%",
+             height: "600px",
+             editing: false,
+             filtering: true,
+             sorting: true,
+             paging: true,
+             pageSize: 800,
+             controller: 
+             {
+                 loadData: function () 
+                 {
+                     dataType: "json"
+                     return data;
+                 },
+             },
+             autoload: true,
+             confirmDeleting: false,
+             controller: db,
+             
+             onRefreshed: function (args) { 
+            	
+             },
+             rowDoubleClick: function(args) { 
+            	 muestraArticulosProveedor(args.item.nombreCorto);
+             },
+             fields: 
+             [
+//                 { name: "id_articulo", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_img", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_ecommerce", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+                 //{ name: "proveedor", type: "text",title: "PROVEEDOR", /*width:50,*/ align: 'center', filtering: true },
+                 { name: "nombreCorto", type: "text",title: "NOMBRE CORTO", /*width: 50,*/ align: 'center', filtering: true},
+                 //{ name: "productoPrincipal",  type: "text", title: "PRODUCTO PRINCIPAL", /*width: 18,*/ align: 'center', inserting: false, filtering: true},           
+                 { name: "cantidadSinArticulos",  type: "text", title: "ARTICULOS",/* width: 10,*/ align: 'center', filtering: false},
+                 { name: "cantidadConArticulos", type: "text", title: "CON IMG", /*width:20,*/ align: 'center', filtering: false},
+                 { name: "faltante", type: "text", title: "FALTANTE", /*width:20,*/ align: 'center', filtering: false},
+                 { name: "progr",  type: "text", title: "", width: 40, align: 'center',  inserting: false, filtering: false, 
+                	 itemTemplate: function (value,item) {
+                		 var porcentaje = ((parseInt(item.cantidadConArticulos) / parseInt(item.cantidadSinArticulos)) * 100);
+                		 //var porcentaje = ((parseInt(1) / parseInt(item.cantidadSinArticulos)) * 100);
+                		 if(porcentaje < 25){
+                			 return '<div class="progress"><div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: '+porcentaje+'%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span id="#progresoFloat">'+porcentaje.toFixed(1)+'%</span></div></div>';
+                		 }
+                		 if(porcentaje >= 25 && porcentaje < 50){
+                			 return '<div class="progress"><div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: '+porcentaje+'%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span id="#progresoFloat">'+porcentaje.toFixed(1)+'%</span></div></div>';
+                		 }
+                		 if(porcentaje >= 50 && porcentaje < 99){
+                			 return '<div class="progress"><div class="progress-bar progress-bar-striped" role="progressbar" style="width: '+porcentaje+'%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span id="#progresoFloat">'+porcentaje.toFixed(1)+'%</span></div></div>';
+                		 }
+                		 if(porcentaje >= 100){
+                			 return '<div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: '+porcentaje+'%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span id="#progresoFloat">'+porcentaje.toFixed(1)+'%</span></div></div>';
+                		 }               		              		                 		 		
+                	 }
+                 },
+        	 ],        	 
+    	 });
+     });
+}
+
+function muestraArticulosProveedor(proveedor){
+	document.getElementById('cargando').style.display = 'block';
+	$.ajax({
+		type: 'POST',				 // tipo de request que estamos generando
+        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+        data: "vista=MuestraArticulosXProv&proveedor="+proveedor,    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };
+        //cache: false,
+        //processData:false,                  
+		dataType : 'Json', 
+		beforeSend: function () {
+			$('body').addClass('loading'); //Agregamos la clase loading al body
+        },// formato de transmición de datos que recibimos del server
+		success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+		{ 	
+			$('body').removeClass('loading');	
+			document.getElementById('cargando').style.display = 'none';
+			var catImagenesProv = json.LISTA_PROV_ESPEC;
+			console.log("LISTA_PROV_ESPEC: "+catImagenesProv.length)
+			if(catImagenesProv.length > 0){
+				$("#divMuestraArticulosXProv").css('visibility','visible');
+				cargaGridImgProveedorEspecifico(catImagenesProv);
+			}else{
+				alert("NO SE ENCONTRARON REGISTROS.")
+			}	    		        			     
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{		
+			bootbox.alert({
+			    message: 'No existen registros del Proveedor.',
+			    size: 'small'
+			});
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+						
+		} 
+	});	
+	
+	
+}
+
+function cargaGridImgProveedorEspecifico(catImagenesProv){
+	var db =
+    {
+        loadData: function (filter)/** seccion de filtros **/
+        {
+            return $.grep(catImagenesProv, function (cat) {
+                return  (!filter.grupo.toUpperCase() || cat.grupo.toUpperCase() === filter.grupo.toUpperCase() ||  cat.grupo.toUpperCase() == filter.grupo.toUpperCase() || cat.grupo.toUpperCase().includes(filter.grupo.toUpperCase()))
+                 		&& (!filter.proveedor.toUpperCase() || cat.proveedor.toUpperCase() === filter.proveedor.toUpperCase() || cat.proveedor.toUpperCase() == filter.proveedor.toUpperCase() || cat.proveedor.toUpperCase().includes(filter.proveedor.toUpperCase()))
+                 		&& (!filter.numParte.toUpperCase() || cat.numParte.toUpperCase() === filter.numParte.toUpperCase() || cat.numParte.toUpperCase() == filter.numParte.toUpperCase() || cat.numParte.toUpperCase().includes(filter.numParte.toUpperCase()))
+                 		&& (!filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase() === filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase() == filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase().includes(filter.descripcionImg.toUpperCase()))
+                 		&& (!filter.familia.toUpperCase() || cat.familia.toUpperCase() === filter.familia.toUpperCase() || cat.familia.toUpperCase() == filter.familia.toUpperCase() || cat.familia.toUpperCase().includes(filter.familia.toUpperCase()))
+                 		&& (!filter.marca.toUpperCase() || cat.marca.toUpperCase() === filter.marca.toUpperCase() || cat.marca.toUpperCase() == filter.marca.toUpperCase() || cat.marca.toUpperCase().includes(filter.marca.toUpperCase()))
+                 		&& (!filter.rk.toUpperCase() || cat.rk.toUpperCase() === filter.rk.toUpperCase() || cat.rk.toUpperCase() == filter.rk.toUpperCase() || cat.rk.toUpperCase().includes(filter.rk.toUpperCase()))
+                 		
+            });
+        },
+     };
+	 window.db = db;
+     db.catImagenesProv;
+     
+     $(function ()
+     {
+    	 $("#gridCatalogoXProv").jsGrid({
+    		 width: "100%",
+             height: "650px",
+             editing: false,
+             filtering: true,
+             sorting: true,
+             paging: true,
+             pageSize: 200,
+             pagerFormat: "Pagina: {first} {prev} {pages} {next} {last}    {pageIndex} de {pageCount}",
+             pagePrevText: "Anterior",
+             pageNextText: "Siguiente",
+             pageFirstText: "Primera",
+             pageLastText: "Ultima",
+             controller: 
+             {
+                 loadData: function () 
+                 {
+                     dataType: "json"
+                     return data;
+                 },
+             },
+             autoload: true,
+             confirmDeleting: false,
+             controller: db,
+             
+             onRefreshed: function (args) { 
+            	
+             },
+             rowDoubleClick: function(args) { 
+            	 
+             },
+             fields: 
+             [
+//               { name: "id_ecommerce", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+                 { name: "grupo", type: "text",title: "GRUPO", width: 70, align: 'center', filtering: true },
+                 { name: "proveedor", type: "text",title: "PROVEEDOR", width: 70, align: 'center', filtering: true},
+                 { name: "numParte",  type: "text", title: "No PARTE", /*width: 18,*/ align: 'center', inserting: false, filtering: true},           
+                 { name: "descripcionImg",  type: "text", title: "DESCRIPCION", /*width: 18,*/ align: 'center', inserting: false, filtering: true},
+                 { name: "familia",  type: "text", title: "FAMILIA", /*width: 18,*/ align: 'center', inserting: false, filtering: true},
+                 { name: "marca",  type: "text", title: "MARCA", /*width: 18,*/ align: 'center', inserting: false, filtering: true},
+                 { name: "rk",  type: "text", title: "RK", /*width: 18,*/ align: 'center', inserting: false, filtering: true},
+                 { name: "",  type: "text", title: "1", width: 40, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {
+                		 if(item.madre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item, 1);
+    	                         return false;
+    	                     });
+                		 }
+                		 else
+                		 {
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,1);
+    	                         return false;
+    	                     });
+                		 }
+	                     
+                	 }
+                 },
+                 { name: "",  type: "text", title: "2",  width: 40, align: 'center',  inserting: false, filtering: false, 
+                	 itemTemplate: function (value,item) {  
+                		 if(item.roaOnline == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,2);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,2);
+    	                         return false;
+    	                     });
+                		 }                    
+                	 }
+                 },
+                 { name: "",  type: "text", title: "3", width: 40, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.edas == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,3);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,3);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "4", width: 40, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.mercadoLibre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,4);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,4);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "5", width: 40, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.amazon == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,6);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,6);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "6", width: 40, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.autorep == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,7);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerceArticulo(item,7);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },               
+        	 ],
+    	 });
+     });
+}
+
+function actualizarImagenXArticulo(data){
+	if (window.confirm("Deseas Activar Imagenes para este Articulo: "+data.numParte+"?")) {
+		muestraCargaImagenArticulo(data);  
+		return true;		  
+	}else{
+		return false;
+	}
+}
+
+function muestraCargaImagenArticulo(data) {
+	$("#preview2").html('');
+	$("#fileImagen2").val('');
+	document.getElementById('cargando').style.display = 'block';
+	$("#articuloProv").text(data.numParte)
+	$("#divCargaImgArticulo").css("visibility", "visible");
+	document.getElementById('cargando').style.display = 'none';
+	
+}
+
+function ocultarModalImgXArticulo(){
+	$("#preview2").html('');
+	$("#fileImagen2").val('');
+	document.getElementById('cargando').style.display = 'block';
+	$("#divCargaImgArticulo").css("visibility", "hidden");
+	document.getElementById('cargando').style.display = 'none';
+}
+
+function ocultarMuestraArticulosXProv(){
+	document.getElementById('cargando').style.display = 'block';
+		$("#divMuestraArticulosXProv").css("visibility", "hidden");
+	document.getElementById('cargando').style.display = 'none';
+}
+
+function cargaGridImg(catalogoImg){
+	var db =
+    {
+        loadData: function (filter)/** seccion de filtros **/
+        {
+            return $.grep(catalogoImg, function (cat) {
+                return  (!filter.numParte.toUpperCase() || cat.numParte.toUpperCase() === filter.numParte.toUpperCase() ||  cat.numParte.toUpperCase() == filter.numParte.toUpperCase() || cat.numParte.toUpperCase().includes(filter.numParte.toUpperCase()))
+                 		&& (!filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase() === filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase() == filter.descripcionImg.toUpperCase() || cat.descripcionImg.toUpperCase().includes(filter.descripcionImg.toUpperCase()))
+                 		&& (!filter.proveedor || cat.proveedor === filter.proveedor)
+                 		&& (!filter.grupo || cat.grupo === filter.grupo)
+                 		&& (!filter.rk || cat.rk === filter.rk)
+                 		&& (!filter.nomImg || cat.nomImg === filter.nomImg)
+                 		
+            });
+        },
+     };
+	 window.db = db;
+     db.catalogoImg;
+     
+     $(function ()
+     {
+    	 $("#gridCatalogo").jsGrid({
+    		 width: "100%",
+             height: "600px",
+             editing: false,
+             filtering: true,
+             sorting: true,
+             paging: true,
+             pageSize: 800,
+             controller: 
+             {
+                 loadData: function () 
+                 {
+                     dataType: "json"
+                     return data;
+                 },
+             },
+             autoload: true,
+             confirmDeleting: false,
+             controller: db,
+             
+             onRefreshed: function (args) { 
+            	
+             },
+             
+             fields: 
+             [
+//                 { name: "id_articulo", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_img", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_ecommerce", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+                 { name: "numParte", type: "text",title: "NO. PARTE", /*width:50,*/ align: 'center', filtering: true },
+                 { name: "descripcionImg", type: "text",title: "DESCRIPC", /*width: 50,*/ align: 'center', filtering: true},
+                 { name: "proveedor",  type: "text", title: "PROVEEDOR", /*width: 18,*/ align: 'center', inserting: false, filtering: true},           
+                 { name: "grupo", type: "text", title: "GRUPO", /*width:20,*/ align: 'center',  inserting: false, filtering: true},
+                 { name: "rk",  type: "text", title: "RK",width: 70, align: 'center',  inserting: false, filtering: true},
+                 { name: "",  type: "text", title: "1", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {
+                		 if(item.madre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item, 1);
+    	                         return false;
+    	                     });
+                		 }
+                		 else
+                		 {
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }
+	                     
+                	 }
+                 },
+                 { name: "",  type: "text", title: "2",  width: 50, align: 'center',  inserting: false, filtering: false, 
+                	 itemTemplate: function (value,item) {  
+                		 if(item.roaOnline == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,2);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }                    
+                	 }
+                 },
+                 { name: "",  type: "text", title: "3", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.edas == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,3);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "4", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.mercadoLibre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,4);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "5", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.amazon == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,6);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "6", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.autorep == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,7);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "TODOS", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.todosEcommerce == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,5);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 
+        	 ],
+    	 });
+     });
+     
+}
+
+function muestraRelacionEcommerce(data,tipoEcommerce){
+	var id_articulo = data.id_articulo;
+	var id_img = data.id_img;
+	document.getElementById('cargando').style.display = 'block';
+			$.ajax({
+				type: 'POST',				 // tipo de request que estamos generando
+		        url: 'CatalogoImagen',  	 // URL al que vamos a hacer el pedido
+		        data: "vista=MuestraEcommerceImag&id_articulo="+id_articulo+"&id_ecommerce="+tipoEcommerce,    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };
+		        //cache: false,
+		        //processData:false,                  
+				dataType : 'Json', 
+				beforeSend: function () {
+					$('body').addClass('loading'); //Agregamos la clase loading al body
+		        },// formato de transmición de datos que recibimos del server
+				success : function(json)                          // función que va a ejecutar si el pedido fue exitoso				
+				{ 				
+					$('body').removeClass('loading');	
+					$("#divMarcadoEcommImg").css("visibility", "visible");
+					var listaImg = json.LISTA_ECOMMERCE;
+					$("#lblEcommerce").html(listaImg[0].descriEcommerce);
+					$("#tblDinamicaMarcado").html("");
+					var table = "";
+					table += "<table class='table table-hover'>";
+					table += "<thead>";
+					table += "<tr>"
+					table += "<th scope='col' colspan='3'>Imagenes:</th>"
+					table += "</tr>" ;
+					table += "</thead>";
+					table += "<tbody>";
+					table += "";
+					var tr = "";
+					for(var i = 0;i<listaImg.length; i++){
+						tr += "<tr>";
+						tr += "<td>"+listaImg[i].nomImg+"</td>";
+						tr += "<td><img alt='no found' src='./images/nofound.png'></td>";
+						tr += '<td><button type="button" class="btn btn-success" onclick="actualizarImagen(\u0027'+listaImg[i].nomImg+'\u0027,'+listaImg[i].id_articulo+','+listaImg[i].id_img+','+listaImg[i].id_ecommerce+')"><span><i class="material-icons">settings</i>Actualizar</span></button></td>';
+						tr += '<td><button type="button" class="btn btn-danger" onclick="eliminarImagen(\u0027'+listaImg[i].nomImg+'\u0027,'+listaImg[i].id_articulo+','+listaImg[i].id_img+','+listaImg[i].id_ecommerce+')"><span><i class="material-icons">delete</i>Eliminar</span></button></td>';
+						tr += "</tr>";
+					}					
+					table += tr;
+					table += '</tbody></table>';
+					$("#muestraTabla").html(table);
+					document.getElementById('cargando').style.display = 'none';
+//					$("#gridEcommerceImg").show();
+//					var imgEcommerce = json.LISTA_ECOMMERCE;
+//					cargaGridEcommerce(imgEcommerce);					  	        			     
+				},
+				error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+				{		
+					bootbox.alert({
+					    message: 'No existen registros de Imagenes de Articulos.',
+					    size: 'small'
+					});
+					document.getElementById('cargando').style.display = 'none';
+					return false;
+								
+				} 
+			})	    		        			     
+}
+
+function eliminarImagen(nomImg,id_articulo,id_img,id_ecommerce){
+	//if (window.confirm("Deseas Eliminar la imagen "+nomImg+" del ecommerce?")) {  
+		document.getElementById('cargando').style.display = 'block';
+		$("#nomImgEliminar").text(nomImg)
+		$("#idArticuloElimina").val(id_articulo);
+		$("#idEcommerceElimina").val(id_ecommerce)
+		$("#idImgElimina").val(id_img)
+		$("#nombreImgElimina").val(nomImg)
+		$("#divEliminaImgCatalogo").css("visibility", "visible");
+		document.getElementById('cargando').style.display = 'none';
+//		$.ajax({
+//			type: 'POST',				 // tipo de request que estamos generando
+//	        url: 'ImagenServlet',  	 // URL al que vamos a hacer el pedido
+//	        data: "accion=EliminaImagen&id_articulo="+id_articulo+"&id_ecommerce="+id_ecommerce+"&id_img="+id_img+"&nomImg="+nomImg,    // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };                 
+//			dataType : 'Json', 
+//			beforeSend: function () {
+//				$('body').addClass('loading'); //Agregamos la clase loading al body
+//	        },// formato de transmición de datos que recibimos del server
+//			success : function(rsp)                          // función que va a ejecutar si el pedido fue exitoso				
+//			{
+//				console.log("Regresa de Eliminar: "+ rsp)
+//				alert("Regresa de Eliminar: "+ rsp);
+//				if(rsp){
+//					alert("Imagen Eliminada Correctamente.");
+//				}else{
+//					alert("Ocurrio un error al Intentar Eliminar la Imagen.")
+//				}
+//				document.getElementById('cargando').style.display = 'none';
+//				return true;
+//			},
+//			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+//			{		
+//				bootbox.alert({
+//				    message: 'Error al intentar Eliminar la Imagen.',
+//				    size: 'small'
+//				});
+//				document.getElementById('cargando').style.display = 'none';
+//				return false;
+//							
+//			} 
+//		});	   
+//		return true;		  
+//	}else{
+//		document.getElementById('cargando').style.display = 'block';
+//		$("#nomImgEliminar").text('')
+//		$("#idArticuloElimina").val('');
+//		$("#idEcommerceElimina").val('')
+//		$("#idImgElimina").val('')
+//		$("#nomImgElimina").val('')
+//		$("#divEliminaImgCatalogo").css("visibility", "hidden");
+//		document.getElementById('cargando').style.display = 'none';
+//		return false;
+//	}
+}
+
+function guardaNombreImagenElimina(){
+	 var idArticuloEliminar = $("#idArticuloElimina").val();
+	 var idEcommEliminar = $("#idEcommerceElimina").val();
+	 var idImgEliminar = $("#idImgElimina").val();
+	 var nomImgEliminar = $("#nombreImgElimina").val()
+	 var parametros = "accion=GuardaValoresImgEliminar&idArticuloEliminar="+idArticuloEliminar+"&idEcommEliminar="+idEcommEliminar+"&idImgEliminar="+idImgEliminar+"&nombreImgEliminar="+nomImgEliminar;
+	 $.ajax({			
+			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+			type : 'POST',                                // tipo de request que estamos generando
+			dataType : 'json', 
+			 beforeSend: function () {
+	             $('body').addClass('loading'); //Agregamos la clase loading al body
+	         },// formato de transmición de datos que recibimos del server
+			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+			{ 
+				return true;
+			},
+			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+			{								
+				return false;
+				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+			} 
+		}); 
+}
+
+function ocultaDivEliminaImg(){
+	$("#nomImgEliminar").text('')
+	$("#idArticuloElimina").val('');
+	$("#idEcommerceElimina").val('')
+	$("#idImgElimina").val('')
+	$("#nomImgElimina").val('')
+	$("#divEliminaImgCatalogo").css("visibility", "hidden");
+}
+
+function actualizarImagen(nomImg,id_articulo,id_img,id_ecommerce){
+	if (window.confirm("Deseas Actualizar la imagen "+nomImg+" del ecommerce?")) {  
+		cargaNuevaImg(nomImg,id_articulo,id_img,id_ecommerce);
+		return true;		  
+	}else{
+		return false;
+	}
+}
+
+function cargaNuevaImg(nomImg,id_articulo,id_img,id_ecommerce){
+	document.getElementById('cargando').style.display = 'block';
+	$("#preview3").html('');
+	$("#fileImagen3").val('');
+	
+	$("#divActuaImgCatalogo").css("visibility", "visible");
+	$("#nomImgActualizar").html(nomImg)
+	$("#idArticuloActualizar").val(id_articulo)
+	$("#idImgActualizar").val(id_img)
+	$("#idEcommActualizar").val(id_ecommerce)
+	document.getElementById('cargando').style.display = 'none';
+}
+
+ function ocultarCargaNuevaImg(){
+	 document.getElementById('cargando').style.display = 'block';
+	 $("#divActuaImgCatalogo").css("visibility", "hidden");
+	 $("#idArticuloActualizar").val('');
+		$("#idImgActualizar").val('');
+		$("#idEcommActualizar").val('');
+	 document.getElementById('cargando').style.display = 'none';
+ }
+
+function actualizarImagenEcommerce(data){
+	if (window.confirm("Deseas Activar este ecommerce?")) {
+		muestraCargaImagen();  
+		return true;		  
+	}else{
+		return false;
+	}
+}
+
+function actualizarImagenEcommerceArticulo(data,id_ecommerce){
+	$("#idEcommerceAct").val('')
+	$("#articuloActivar").text('')
+	if (window.confirm("Deseas Activar este ecommerce?")) {
+		$("#idEcommerceAct").val();
+		var extImg = "";
+		$.ajax({			
+			url :'CatalogoImagen',                               // URL al que vamos a hacer el pedido
+			data : "vista=consultaEXT&extensionBuscar="+id_ecommerce,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+			type : 'POST',                                // tipo de request que estamos generando
+			dataType : 'json', 
+			 beforeSend: function () {
+	             $('body').addClass('loading'); //Agregamos la clase loading al body
+	         },// formato de transmición de datos que recibimos del server
+			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+			{    	    		
+				var ext = resp.EXTIMG;
+				console.log("rsp ExtImg: "+ext)
+				extImg = ext;
+				$("#idEcommerceAct").val(extImg)
+				$("#extImgCarga").text(" Tipo de Imagen: "+ extImg)
+				$("#articuloActivar").text('"'+data.numParte+'"')
+				muestraCargaImagen();  
+			},
+			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+			{								
+				alert("Error al consultar extension Img.")
+				return false;			
+				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+			} 
+		});    		
+		return true;		  
+	}else{
+		return false;
+	}
+}
+
+function muestraCargaImagen() {
+	$("#preview2").html('');
+	$("#fileImagen2").val('');
+	document.getElementById('cargando').style.display = 'block';
+	$("#divCargaEcommImg").css("visibility", "visible");
+	document.getElementById('cargando').style.display = 'none';
+	
+}
+
+function ocultarModalCargaImg(){
+	$("#divCargaEcommImg").css("visibility", "hidden");
+	$("#idEcommerceAct").val('')
+}
+
+function cargaGridEcommerce(imgEcommerce){
+
+	var db =
+    {
+        loadData: function (filter)/** seccion de filtros **/
+        {
+            return $.grep(imgEcommerce, function (cat) {
+                return  (!filter.id_articulo || cat.id_articulo === filter.id_articulo)
+                 		&& (!filter.id_img || cat.id_img === filter.id_img)
+                 		&& (!filter.id_ecommerce || cat.id_ecommerce === filter.id_ecommerce)
+                 		&& (!filter.descriEcommerce || cat.descriEcommerce === filter.descriEcommerce)
+                 		&& (!filter.rk || cat.rk === filter.rk)
+                 		&& (!filter.directorio || cat.directorio === filter.directorio)
+            });
+        },
+     };
+	 window.db = db;
+     db.imgEcommerce;
+     
+     $(function ()
+     {
+    	 $("#gridEcommerceImg").jsGrid({
+    		 width: "100%",
+             height: "600px",
+             editing: false,
+             filtering: true,
+             sorting: true,
+             paging: true,
+             pageSize: 800,
+             controller: 
+             {
+                 loadData: function () 
+                 {
+                     dataType: "json"
+                     return data;
+                 },
+             },
+             autoload: true,
+             confirmDeleting: false,
+             controller: db,
+             
+             onRefreshed: function (args) { 
+            	
+             },
+             
+             fields: 
+             [
+                 { name: "id_articulo", type: "text",title: "", width: 10, align: 'center',  css: 'EG_hide'},
+                 { name: "id_img", type: "text",title: "", width: 10, align: 'center',  css: 'EG_hide'},
+                 { name: "id_ecommerce", type: "text",title: "", width: 10, align: 'center',  css: 'EG_hide'},
+                 { name: "descriEcommerce", type: "text",title: "ECOMMERCE", width: 40, align: 'center', filtering: true },
+                 { name: "directorio", type: "text",title: "UBICACION", width: 40, align: 'center', filtering: true},                                   
+        	 ],
+    	 });
+     });
+}
+
+function ocultarModalMarcadoEcommImg(){
+	$("#divMarcadoEcommImg").css("visibility", "hidden");
+    $("#gridEcommerceImg").hide();
+}
+
+function muestraBuscarArticulos(){
+	$("#frmBuscar").css('display','block');
+	$("#frmCargar").css('display','none');
+}
+
+function muestraCargarArticulos(){
+	$("#frmBuscar").css('display','none');
+	$("#frmCargar").css('display','block');
+}
+
+function mostrarEcommerce(){
+	var slcEcomm = $("#slcEcomm").val();
+	
+	if(slcEcomm == "0"){
+		$("#tipoImg").val('');
+		$('#fileImagen').val('');
+		$("#preview").html('');
+		$("#btnAltaImg").css('display','none')
+		$("#divPng").css("display","none");
+		$("#divJpg").css("display","none");
+		$("#divTiff").css("display","none");
+		$("#divJpeg").css("display","none");
+	}
+	if(slcEcomm == "1"){
+		mostrarTIFF();
+	}
+	if(slcEcomm == "2"){
+		mostrarJPG();
+	}
+	if(slcEcomm == "3"){
+		mostrarPNG();
+	}
+	if(slcEcomm == "4"){
+		mostrarJPEG();
+	}
+}
+
+function mostrarTIFF(){
+	$("#tipoImg").val('');
+	$('#fileImagen').val('');
+	$("#preview").html('');
+	$("#tipoImg").val('tif');
+	$("#btnAltaImg").css('display','none')
+	
+	$("#divTiff").css("display","block");
+	$("#divJpg").css("display","none");
+	$("#divPng").css("display","none");
+	$("#divJpeg").css("display","none");
+
+	$('input:checkbox').prop('checked', false);	
+	
+}
+
+function mostrarJPG(){
+	
+	$("#tipoImg").val('');
+	$('#fileImagen').val('');
+	$("#preview").html('');
+	$("#tipoImg").val('jpg');
+	$("#btnAltaImg").css('display','none')
+	
+	$("#divJpg").css("display","block");
+	$("#divTiff").css("display","none");
+	$("#divPng").css("display","none");
+	$("#divJpeg").css("display","none");
+	
+	$('input:checkbox').prop('checked', false);
+	
+}
+
+function mostrarPNG(){
+	$("#tipoImg").val('');
+	$('#fileImagen').val('');
+	$("#preview").html('');
+	$("#tipoImg").val('png');
+	$("#btnAltaImg").css('display','none')
+	
+	$("#divPng").css("display","block");
+	$("#divJpg").css("display","none");
+	$("#divTiff").css("display","none");
+	$("#divJpeg").css("display","none");
+	
+	$('input:checkbox').prop('checked', false);
+	
+}
+
+function mostrarJPEG(){
+	$("#tipoImg").val('');
+	$('#fileImagen').val('');
+	$("#preview").html('');
+	$("#tipoImg").val('jpeg');
+	$("#btnAltaImg").css('display','none')
+	
+	$("#divJpeg").css("display","block");
+	$("#divPng").css("display","none");
+	$("#divJpg").css("display","none");
+	$("#divTiff").css("display","none");
+	
+	$('input:checkbox').prop('checked', false);
+	
+}
+
+function todosTiff(){
+	var todosTiff = $("#tiffTodos")[0].checked;
+	if(todosTiff){
+		$("#tiff1")[0].checked = true;
+		$("#tiff2")[0].checked = true;
+		$("#tiff3")[0].checked = true;
+		$("#tiff4")[0].checked = true;
+		$("#tiff5")[0].checked = true;
+	}else{
+		$("#tiff1")[0].checked = false;
+		$("#tiff2")[0].checked = false;
+		$("#tiff3")[0].checked = false;
+		$("#tiff4")[0].checked = false;
+		$("#tiff5")[0].checked = false;
+	}
+}
+
+function todosJpg(){
+	
+	var todosjpg = $("#jpgTodos")[0].checked;
+	if(todosjpg){
+		$('#checkJpg').prop('checked', true);
+	}else{
+		$('#checkJpg').prop('checked', false);
+	}
+}
+
+function todosPng(){
+	var todospng = $("#pngTodos")[0].checked;
+	if(todospng){
+		$("#png1")[0].checked = true;
+		$("#png2")[0].checked = true;
+		$("#png3")[0].checked = true;
+		$("#png4")[0].checked = true;
+		$("#png5")[0].checked = true;
+	}else{
+		$("#png1")[0].checked = false;
+		$("#png2")[0].checked = false;
+		$("#png3")[0].checked = false;
+		$("#png4")[0].checked = false;
+		$("#png5")[0].checked = false;
+	}
+}
+
+function todosJpeg(){
+	var todosjpeg = $("#jpegTodos")[0].checked;
+	if(todosjpeg){
+		$("#jpeg1")[0].checked = true;
+		$("#jpeg2")[0].checked = true;
+		$("#jpeg3")[0].checked = true;
+		$("#jpeg4")[0].checked = true;
+		$("#jpeg5")[0].checked = true;
+	}else{
+		$("#jpeg1")[0].checked = false;
+		$("#jpeg2")[0].checked = false;
+		$("#jpeg3")[0].checked = false;
+		$("#jpeg4")[0].checked = false;
+		$("#jpeg5")[0].checked = false;
+	}
+}
+
+function validaExisteArticulo(){
+	document.getElementById('cargando').style.display = 'block';
+	 
+         let checkboxesTiff = document.querySelectorAll('input[name="chekTiff"]:checked');
+         let valuesTiff = [];
+         checkboxesTiff.forEach((checkbox) => {
+        	 valuesTiff.push(checkbox.value);
+         });
+         
+         let checkboxesJpg = document.querySelectorAll('input[name="checkJpg"]:checked');
+         let valuesJpg = [];
+         checkboxesJpg.forEach((checkbox) => {
+        	 valuesJpg.push(checkbox.value);
+         });
+         
+         let checkboxesPng = document.querySelectorAll('input[name="checkPng"]:checked');
+         let valuesPng = [];
+         checkboxesPng.forEach((checkbox) => {
+        	 valuesPng.push(checkbox.value);
+         });
+         
+         let checkboxesJpeg = document.querySelectorAll('input[name="checkJpeg"]:checked');
+         let valuesJpeg = [];
+         checkboxesJpeg.forEach((checkbox) => {
+        	 valuesJpeg.push(checkbox.value);
+         });
+     
+		var tipoImg = $("#tipoImg").val();
+		var fileInput = $('#fileImagen').val();
+		
+		if(valuesTiff.length == 0 && valuesJpg.length == 0 && valuesPng.length == 0 && valuesJpeg.length == 0){
+			alert("Seleccione al menos un tipo de Ecommerce. (CHECK) ");
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+		}else if(fileInput == '' || fileInput == null){
+			alert("Seleccione algun archivo de Imagen")
+			document.getElementById('cargando').style.display = 'none';
+			return false;
+		}else{			
+			guardaVariablesArticulo();
+		}	
+}
+
+function validaArticulo(){
+	document.getElementById('cargando').style.display = 'block';
+	$("#preview").html('')
+	$("#fileImagen").val('')
+	var articuloNuevo = ""; 
+	articuloNuevo =	$('#articuloNuevo').val();
+	var rspA;
+	var parametros = "accion=validaArticulo&articuloBuscar="+articuloNuevo;
+	$.ajax({
+		
+		url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+		data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', 
+		 beforeSend: function () {
+             $('body').addClass('loading'); //Agregamos la clase loading al body
+         },// formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{ 				
+			if(resp == "0"){
+				alert('Ocurrio un error al Validar Articulo');
+				document.getElementById('cargando').style.display = 'none';
+				$("#btnAltaImg").css('display','none')
+				$("#fileImagen").css('display','none')
+				$("#lblAltaImg").css('display','none')
+				$("#preview").css('display','none')
+				$("#preview").html('')
+				$("#fileImagen").val('')
+				return false; 
+			}else if(resp == "1"){
+				bootbox.alert({
+				    message: 'El Articulo Ingresado NO EXISTE. Intente otro.',
+				    size: 'small'
+				});
+				document.getElementById('cargando').style.display = 'none';
+				$("#btnAltaImg").css('display','none')
+				$("#fileImagen").css('display','none')
+				$("#lblAltaImg").css('display','none')
+				$("#preview").css('display','none')
+				$("#preview").html('')
+				$("#fileImagen").val('')
+				return false;
+			}else if(resp == "2"){
+				if (window.confirm("El Articulo Ingresado YA TIENE IMAGENES, DESEA REEMPLAZAR LOS ARCHIVOS?")) {
+					document.getElementById('cargando').style.display = 'none';
+					$("#btnAltaImg").css('display','block')
+					$("#fileImagen").css('display','block')
+					$("#lblAltaImg").css('display','block')
+					$("#preview").css('display','block')
+					$("#preview").html('')
+					$("#fileImagen").val('')
+					return true; 
+				}else{
+					document.getElementById('cargando').style.display = 'none';
+					$("#btnAltaImg").css('display','none')
+					$("#fileImagen").css('display','none')
+					$("#lblAltaImg").css('display','none')
+					$("#preview").css('display','none')
+					$("#preview").html('')
+					$("#fileImagen").val('')
+					return false;
+				}
+			}else if(resp == "3"){	
+				document.getElementById('cargando').style.display = 'none';
+				$("#btnAltaImg").css('display','block')
+				$("#fileImagen").css('display','block')
+				$("#lblAltaImg").css('display','block')
+				$("#preview").css('display','block')
+				$("#preview").html('')
+				$("#fileImagen").val('')
+				return true;						     
+			}else{
+				alert("ocurrio un error, cierre sesión e ingrese de Nuevo.")
+				document.getElementById('cargando').style.display = 'none';
+				$("#btnAltaImg").css('display','none')
+				$("#fileImagen").css('display','none')
+				$("#lblAltaImg").css('display','none')
+				$("#preview").css('display','none')
+				$("#preview").html('')
+				$("#fileImagen").val('')
+				return false;
+			}		
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{				
+			alert("Ocurrio un error al Validar Articulo.")
+			return false;
+			document.getElementById('cargando').style.display = 'none';
+		} 
+	});
+}
+
+function cargaGridImgNuevo(catalogoImg){
+
+	var db =
+    {
+        loadData: function (filter)/** seccion de filtros **/
+        {
+            return $.grep(catalogoImg, function (cat) {
+                return  (!filter.numParte.toUpperCase() || cat.numParte.toUpperCase() === filter.numParte.toUpperCase() ||  cat.numParte.toUpperCase() == filter.numParte.toUpperCase() || cat.numParte.toUpperCase().includes(filter.numParte.toUpperCase()))
+                 		&& (!filter.descripcionImg || cat.descripcionImg === filter.descripcionImg)
+                 		&& (!filter.proveedor || cat.proveedor === filter.proveedor)
+                 		&& (!filter.grupo || cat.grupo === filter.grupo)
+                 		&& (!filter.rk || cat.rk === filter.rk)
+                 		&& (!filter.nomImg || cat.nomImg === filter.nomImg)
+                 		
+            });
+        },
+     };
+	 window.db = db;
+     db.catalogoImg;
+     
+     $(function ()
+     {
+    	 $("#gridCatalogoNuevo").jsGrid({
+    		 width: "100%",
+             height: "600px",
+             editing: false,
+             filtering: true,
+             sorting: true,
+             paging: true,
+             pageSize: 800,
+             controller: 
+             {
+                 loadData: function () 
+                 {
+                     dataType: "json"
+                     return data;
+                 },
+             },
+             autoload: true,
+             confirmDeleting: false,
+             controller: db,
+             
+             onRefreshed: function (args) { 
+            	
+             },
+             
+             fields: 
+             [
+//                 { name: "id_articulo", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_img", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+//                 { name: "id_ecommerce", type: "text",title: "", width: 20, align: 'center',  css: 'EG_hide'},
+                 { name: "numParte", type: "text",title: "NO. PARTE", /*width:50,*/ align: 'center', filtering: true },
+                 { name: "descripcionImg", type: "text",title: "DESCRIPC", /*width: 50,*/ align: 'center', filtering: true},
+                 { name: "proveedor",  type: "text", title: "PROVEEDOR", /*width: 18,*/ align: 'center', inserting: false, filtering: true},           
+                 { name: "grupo", type: "text", title: "GRUPO", /*width:20,*/ align: 'center',  inserting: false, filtering: true},
+                 { name: "rk",  type: "text", title: "RK",width: 70, align: 'center',  inserting: false, filtering: true},
+                 { name: "",  type: "text", title: "1", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {
+                		 if(item.madre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item, 1);
+    	                         return false;
+    	                     });
+                		 }
+                		 else
+                		 {
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }
+	                     
+                	 }
+                 },
+                 { name: "",  type: "text", title: "2",  width: 50, align: 'center',  inserting: false, filtering: false, 
+                	 itemTemplate: function (value,item) {  
+                		 if(item.roaOnline == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,2);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }                    
+                	 }
+                 },
+                 { name: "",  type: "text", title: "3", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.edas == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,3);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "4", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.mercadoLibre == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,4);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "5", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.amazon == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,6);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "6", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.autorep == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,7);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 { name: "",  type: "text", title: "TODOS", width: 50, align: 'center',  inserting: false, filtering: false,
+                	 itemTemplate: function (value,item) {  
+                		 if(item.todosEcommerce == 1){
+                			 return $("<button>").attr("class", "EG_btnActualizar").text("Actualizar").on("click", function () {
+    	                         muestraRelacionEcommerce(item,5);
+    	                         return false;
+    	                     });
+                		 }else{
+                			 return $("<button>").attr("class", "EG_btnModificar").text("Activar").on("click", function () {
+                				 actualizarImagenEcommerce(item);
+    	                         return false;
+    	                     });
+                		 }   
+                	 }
+                 },
+                 
+        	 ],
+    	 });
+     });
+     
+}
+
+function guardaVariablesArticulo(){
+	var lstCheckVal = []; 
+	
+	 let checkboxesTiff = document.querySelectorAll('input[name="chekTiff"]:checked');
+     let valuesTiff = [];
+     checkboxesTiff.forEach((checkbox) => {
+    	 valuesTiff.push(checkbox.value);
+     });
+     
+     let checkboxesJpg = document.querySelectorAll('input[name="checkJpg"]:checked');
+     let valuesJpg = [];
+     checkboxesJpg.forEach((checkbox) => {
+    	 valuesJpg.push(checkbox.value);
+     });
+     
+     let checkboxesPng = document.querySelectorAll('input[name="checkPng"]:checked');
+     let valuesPng = [];
+     checkboxesPng.forEach((checkbox) => {
+    	 valuesPng.push(checkbox.value);
+     });
+     
+     let checkboxesJpeg = document.querySelectorAll('input[name="checkJpeg"]:checked');
+     let valuesJpeg = [];
+     checkboxesJpeg.forEach((checkbox) => {
+    	 valuesJpeg.push(checkbox.value);
+     });
+     
+     if(valuesTiff.length > 0){
+    	 lstCheckVal = valuesTiff;
+     }
+     if(valuesJpg.length > 0){
+    	 lstCheckVal = valuesJpg;
+     }
+     if(valuesPng.length > 0){
+    	 lstCheckVal = valuesPng;
+     }
+     if(valuesJpeg > 0){
+    	 lstCheckVal = valuesJpeg;
+     }
+	var reemplaza = $("#reemplazaImg").val();
+	var tipoImg = $("#tipoImg").val();
+	var parametros2 = "accion=NombreArticulo&tipoImg="+tipoImg+"&ChecksEcomm="+lstCheckVal+"&reemplaza="+reemplaza;
+	$.ajax({			
+		url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+		data : parametros2,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', 
+		 beforeSend: function () {
+             $('body').addClass('loading'); //Agregamos la clase loading al body
+         },// formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{
+			return true;
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{								
+			return false;
+			// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+		} 
+	}); 
+}
+
+function validarImagenes(obj){
+	$("#preview").html('');
+	$("#btnAltaImg").css('display','none')
+	var tipoImg = $("#tipoImg").val();
+	var fileInput = document.getElementById('fileImagen');
+    var filePath = fileInput.value;
+   // var uploadFile = obj.files[0];
+    //var i = 0;
+    var j = 0;
+    for(var i = 0; i < obj.files.length; i++) 
+    {
+    	 var uploadFile = obj.files[parseInt(i)];
+    	 var splitNombreImagen = uploadFile.name.split(".");
+    	 var nombreImagen = "";
+    	 nombreImagen = splitNombreImagen[0];
+    	//if (!(/\.(jpg|jpeg|png|gif)$/i).test(uploadFile.name)) {
+    	 if(tipoImg == "jpg"){
+    		 if (!(/\.(jpg)$/i).test(uploadFile.name)) {
+    	    		bootbox.alert({
+    				    message: 'El archivo a adjuntar no es una imagen <b>['+tipoImg+']</b>: ' + uploadFile.name,
+    				    size: 'small'
+    				});
+    	    		fileInput.value = '';
+    	    		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+    	        }
+    	    	else 
+    	        {
+    	    		if(nombreImagen.includes("_")){
+    	    			var rmvCaracImg = nombreImagen.split("_");
+    	    			nombreImagen = rmvCaracImg[0]; 
+    	    		}
+    	    		var parametros = "accion=validaArticulo&articuloBuscar="+nombreImagen;
+    	    		$.ajax({			
+    	    			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+    	    			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+    	    			type : 'POST',                                // tipo de request que estamos generando
+    	    			dataType : 'json', 
+    	    			 beforeSend: function () {
+    	    	             $('body').addClass('loading'); //Agregamos la clase loading al body
+    	    	         },// formato de transmición de datos que recibimos del server
+    	    			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+    	    			{
+    	    				if(resp == "0"){
+    	    					alert('Ocurrio un error al Validar Articulo');
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('') 	
+    	    					$("#reemplazaImg").val('0')
+    	    					return false; 
+    	    				}else if(resp == "1"){
+    	    					bootbox.alert({
+    	    					    message: 'El Articulo Ingresado NO EXISTE. Intente otro. ',
+    	    					    size: 'small'
+    	    					});
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}else if(resp == "2"){
+    	    					if (window.confirm("El Articulo Ingresado YA TIENE IMAGENES, DESEA REEMPLAZAR LOS ARCHIVOS?")) {
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						var img = new Image();
+    	    						var r = 0;
+    			    	            img.onload = function () {
+    			    	            	
+    			    	            	console.log("fileInput.files: "+fileInput.files +" fileInput.files["+parseInt(j)+"]: "+ fileInput.files[parseInt(j)])
+    			    	            	console.log("ancho: "+parseInt(this.width.toFixed(0)) + " Alto: " + parseInt(this.height.toFixed(0)))
+    			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+    			    	                	$("#preview").html('');
+    			    	                	bootbox.alert({
+    			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+    			    	    				    //size: 'small'
+    			    	    				});   			    	                	 			    	   
+    			    	                    fileInput.value = '';
+    			    	                    $("#reemplazaImg").val('0')
+    			    	                    return false;
+    			    	                }
+    			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {    			    	        
+    			    	                    var reader = new FileReader();
+    			    	                    reader.onload = function(e) {
+    			    	                  	   $('#preview').css('display', 'block');
+    			    	                  	   $("#btnAltaImg").css('display','block');  
+    			    	                  	   $("#reemplazaImg").val('1')
+    			    	                       document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+    			    	                    };
+    			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+    			    	                    j = j+1;
+    			    	                }    			    
+    			    	            };
+    			    	            img.src = URL.createObjectURL(uploadFile);     			    	      
+    	    						return true; 
+    	    					}else{
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						$("#btnAltaImg").css('display','none')
+    	    						$("#preview").css('display','none')
+    	    						$("#preview").html('')
+    	    						$("#fileImagen").val('')  
+    	    						$("#reemplazaImg").val('0')
+    	    						return false;
+    	    					}
+    	    				}else if(resp == "3"){	
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					var img = new Image();
+			    	            img.onload = function () {			    	            				    	         
+			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+			    	                	$("#preview").html('');
+			    	                	bootbox.alert({
+			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+			    	    				    //size: 'small'
+			    	    				});			    	                
+			    	                    fileInput.value = '';
+			    	                    $("#reemplazaImg").val('0')
+			    	                    return false;
+			    	                }
+			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {			    	                
+			    	                    var reader = new FileReader();
+			    	                    reader.onload = function(e) {
+			    	                  	   $('#preview').css('display', 'block');
+			    	                  	   $("#btnAltaImg").css('display','block');
+			    	                  	   $("#reemplazaImg").val('0')
+			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+			    	                    };			    	                    
+			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+			    	                    j = j+1;
+			    	                }
+			    	            	
+			    	            };
+			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    					return true;						     
+    	    				}else{
+    	    					alert("ocurrio un error, cierre sesión e ingrese de Nuevo.")
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}
+   					
+    	    			},
+    	    			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+    	    			{								
+    	    				return false;
+    	    				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+    	    			} 
+    	    		}); 
+    	 	    	                  	       
+    	        }
+    	 }
+    	 if(tipoImg == "jpeg"){
+    		 if (!(/\.(jpeg)$/i).test(uploadFile.name)) {
+    	    		bootbox.alert({
+    				    message: 'El archivo a adjuntar no es una imagen <b>['+tipoImg+']</b>: ' + uploadFile.name,
+    				    size: 'small'
+    				});
+    	    		fileInput.value = '';
+    	    		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+    	        }
+    	    	else 
+    	        {
+    	    		if(nombreImagen.includes("_")){
+    	    			var rmvCaracImg = nombreImagen.split("_");
+    	    			nombreImagen = rmvCaracImg[0]; 
+    	    		}    	    
+    	    		var parametros = "accion=validaArticulo&articuloBuscar="+nombreImagen;
+    	    		$.ajax({			
+    	    			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+    	    			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+    	    			type : 'POST',                                // tipo de request que estamos generando
+    	    			dataType : 'json', 
+    	    			 beforeSend: function () {
+    	    	             $('body').addClass('loading'); //Agregamos la clase loading al body
+    	    	         },// formato de transmición de datos que recibimos del server
+    	    			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+    	    			{    	    			
+    	    				if(resp == "0"){
+    	    					alert('Ocurrio un error al Validar Articulo');
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false; 
+    	    				}else if(resp == "1"){
+    	    					bootbox.alert({
+    	    					    message: 'El Articulo Ingresado NO EXISTE. Intente otro. ',
+    	    					    size: 'small'
+    	    					});
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}else if(resp == "2"){
+    	    					if (window.confirm("El Articulo Ingresado YA TIENE IMAGENES, DESEA REEMPLAZAR LOS ARCHIVOS?")) {
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						var img = new Image();
+    			    	            img.onload = function () {    			    	            	    			    	            
+    			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+    			    	                	$("#preview").html('');
+    			    	                	bootbox.alert({
+    			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+    			    	    				    //size: 'small'
+    			    	    				});
+    			    	                	$("#reemplazaImg").val('0')
+    			    	                    fileInput.value = '';
+    			    	                    return false;
+    			    	                }
+    			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {    			    	                
+    			    	                    var reader = new FileReader();
+    			    	                    reader.onload = function(e) {
+    			    	                  	   $('#preview').css('display', 'block');
+    			    	                  	   $("#btnAltaImg").css('display','block');
+    			    	                  	   $("#reemplazaImg").val('1')
+    			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+    			    	                    };
+    			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+    			    	                    j = j+1;
+    			    	                }
+    			    	            	
+    			    	            };
+    			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    						return true; 
+    	    					}else{
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						$("#btnAltaImg").css('display','none')
+    	    						$("#preview").css('display','none')
+    	    						$("#preview").html('')
+    	    						$("#fileImagen").val('')
+    	    						$("#reemplazaImg").val('0')
+    	    						return false;
+    	    					}
+    	    				}else if(resp == "3"){	
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					var img = new Image();
+			    	            img.onload = function () {			    	            				    	            	
+			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+			    	                	$("#preview").html('');
+			    	                	bootbox.alert({
+			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+			    	    				    //size: 'small'
+			    	    				});
+			    	                	$("#reemplazaImg").val('0')
+			    	                    fileInput.value = '';
+			    	                	$("#reemplazaImg").val('0')
+			    	                    return false;
+			    	                }
+			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {			    	                	
+			    	                    var reader = new FileReader();
+			    	                    reader.onload = function(e) {
+			    	                  	   $('#preview').css('display', 'block');
+			    	                  	   $("#btnAltaImg").css('display','block');
+			    	                  	   $("#reemplazaImg").val('0')
+			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+			    	                    };
+			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+			    	                    j = j+1;
+			    	                }
+			    	            	
+			    	            };
+			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    					return true;						     
+    	    				}else{
+    	    					alert("ocurrio un error, cierre sesión e ingrese de Nuevo.")
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}
+   					
+    	    			},
+    	    			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+    	    			{								
+    	    				return false;
+    	    				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+    	    			} 
+    	    		});   	       
+    	        }
+    	 }
+    	 if(tipoImg == "png"){
+    		 if (!(/\.(png)$/i).test(uploadFile.name)) {
+    	    		bootbox.alert({
+    				    message: 'El archivo a adjuntar no es una imagen <b>['+tipoImg+']</b>: ' + uploadFile.name,
+    				    size: 'small'
+    				});
+    	    		fileInput.value = '';
+    	    		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+    	        }
+    	    	else 
+    	        {
+    	    		if(nombreImagen.includes("_")){
+    	    			var rmvCaracImg = nombreImagen.split("_");
+    	    			nombreImagen = rmvCaracImg[0]; 
+    	    		}    	    		
+    	    		var parametros = "accion=validaArticulo&articuloBuscar="+nombreImagen;
+    	    		$.ajax({			
+    	    			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+    	    			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+    	    			type : 'POST',                                // tipo de request que estamos generando
+    	    			dataType : 'json', 
+    	    			 beforeSend: function () {
+    	    	             $('body').addClass('loading'); //Agregamos la clase loading al body
+    	    	         },// formato de transmición de datos que recibimos del server
+    	    			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+    	    			{    	    				
+    	    				if(resp == "0"){
+    	    					alert('Ocurrio un error al Validar Articulo');
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false; 
+    	    				}else if(resp == "1"){
+    	    					bootbox.alert({
+    	    					    message: 'El Articulo Ingresado NO EXISTE. Intente otro . ',
+    	    					    size: 'small'
+    	    					});
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}else if(resp == "2"){
+    	    					if (window.confirm("El Articulo Ingresado YA TIENE IMAGENES, DESEA REEMPLAZAR LOS ARCHIVOS?")) {
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						var img = new Image();
+    			    	            img.onload = function () {    			    	            	    			    	            	
+    			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+    			    	                	$("#preview").html('');
+    			    	                	bootbox.alert({
+    			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+    			    	    				    //size: 'small'
+    			    	    				});
+    			    	                   
+    			    	                    fileInput.value = '';
+    			    	                    $("#reemplazaImg").val('0')
+    			    	                    return false;
+    			    	                }
+    			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {    			    	                	
+    			    	                    var reader = new FileReader();
+    			    	                    reader.onload = function(e) {
+    			    	                  	   $('#preview').css('display', 'block');
+    			    	                  	   $("#btnAltaImg").css('display','block');
+    			    	                  	   $("#reemplazaImg").val('1')
+    			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+    			    	                    };
+    			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+    			    	                    j = j+1;
+    			    	                }
+    			    	            	
+    			    	            };
+    			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    						return true; 
+    	    					}else{
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						$("#btnAltaImg").css('display','none')
+    	    						$("#preview").css('display','none')
+    	    						$("#preview").html('')
+    	    						$("#fileImagen").val('')
+    	    						$("#reemplazaImg").val('0')
+    	    						return false;
+    	    					}
+    	    				}else if(resp == "3"){	
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					var img = new Image();
+			    	            img.onload = function () {			    	            				    	            	
+			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+			    	                	$("#preview").html('');
+			    	                	bootbox.alert({
+			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+			    	    				    //size: 'small'
+			    	    				});
+			    	                	$("#reemplazaImg").val('0')
+			    	                    fileInput.value = '';
+			    	                    return false;
+			    	                }
+			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {			    	                	
+			    	                    var reader = new FileReader();
+			    	                    reader.onload = function(e) {
+			    	                  	   $('#preview').css('display', 'block');
+			    	                  	   $("#btnAltaImg").css('display','block');
+			    	                  	   $("#reemplazaImg").val('0')
+			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+			    	                    };
+			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+			    	                    j = j+1;
+			    	                }
+			    	            	
+			    	            };
+			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    					return true;						     
+    	    				}else{
+    	    					alert("ocurrio un error, cierre sesión e ingrese de Nuevo.")
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					return false;
+    	    				}
+   					
+    	    			},
+    	    			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+    	    			{								
+    	    				return false;
+    	    				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+    	    			} 
+    	    		});       	       
+    	        }
+    	 }
+    	 if(tipoImg == "tif"){
+    		   if (!(/\.(tif)$/i).test(uploadFile.name)) {
+    	    		bootbox.alert({
+    				    message: 'El archivo a adjuntar no es una imagen <b>['+tipoImg+']</b>: ' + uploadFile.name,
+    				    size: 'small'
+    				});
+    	    		fileInput.value = '';
+    	    		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+    	        }
+    	    	else 
+    	        {
+    	    		if(nombreImagen.includes("_")){
+    	    			var rmvCaracImg = nombreImagen.split("_");
+    	    			nombreImagen = rmvCaracImg[0]; 
+    	    		}    	    		
+    	    		var parametros = "accion=validaArticulo&articuloBuscar="+nombreImagen;
+    	    		$.ajax({			
+    	    			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+    	    			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+    	    			type : 'POST',                                // tipo de request que estamos generando
+    	    			dataType : 'json', 
+    	    			 beforeSend: function () {
+    	    	             $('body').addClass('loading'); //Agregamos la clase loading al body
+    	    	         },// formato de transmición de datos que recibimos del server
+    	    			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+    	    			{    	    				
+    	    				if(resp == "0"){
+    	    					alert('Ocurrio un error al Validar Articulo');
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false; 
+    	    				}else if(resp == "1"){
+    	    					bootbox.alert({
+    	    					    message: 'El Articulo Ingresado NO EXISTE. Intente otro. ',
+    	    					    size: 'small'
+    	    					});
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					$("#reemplazaImg").val('0')
+    	    					return false;
+    	    				}else if(resp == "2"){
+    	    					if (window.confirm("El Articulo Ingresado YA TIENE IMAGENES, DESEA REEMPLAZAR LOS ARCHIVOS?")) {
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						var img = new Image();
+    			    	            img.onload = function () {    			    	            	    			    	            	
+    			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+    			    	                	$("#preview").html('');
+    			    	                	bootbox.alert({
+    			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+    			    	    				    //size: 'small'
+    			    	    				});
+    			    	                	$("#reemplazaImg").val('0')
+    			    	                    fileInput.value = '';
+    			    	                    return false;
+    			    	                }
+    			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {    			    	                	
+    			    	                    var reader = new FileReader();
+    			    	                    reader.onload = function(e) {
+    			    	                  	   $('#preview').css('display', 'block');
+    			    	                  	   $("#btnAltaImg").css('display','block');
+    			    	                  	   $("#reemplazaImg").val('1')
+    			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+    			    	                    };
+    			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+    			    	                    j = j+1;
+    			    	                }
+    			    	            	
+    			    	            };
+    			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    						return true; 
+    	    					}else{
+    	    						document.getElementById('cargando').style.display = 'none';
+    	    						$("#btnAltaImg").css('display','none')
+    	    						$("#preview").css('display','none')
+    	    						$("#preview").html('')
+    	    						$("#fileImagen").val('')
+    	    						$("#reemplazaImg").val('0')
+    	    						return false;
+    	    					}
+    	    				}else if(resp == "3"){	
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					var img = new Image();
+			    	            img.onload = function () {			    	            				    	            	
+			    	                if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+			    	                	$("#preview").html('');
+			    	                	bootbox.alert({
+			    	    				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+			    	    				    //size: 'small'
+			    	    				});
+			    	                	$("#reemplazaImg").val('0')
+			    	                    fileInput.value = '';
+			    	                    return false;
+			    	                }
+			    	                else if (fileInput.files && fileInput.files[parseInt(j)]) {			    	                	
+			    	                    var reader = new FileReader();
+			    	                    reader.onload = function(e) {
+			    	                  	   $('#preview').css('display', 'block');
+			    	                  	   $("#btnAltaImg").css('display','block');
+			    	                  	   $("#reemplazaImg").val('0')
+			    	                        document.getElementById('preview').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+			    	                    };
+			    	                    reader.readAsDataURL(fileInput.files[parseInt(j)]);
+			    	                    j = j+1;
+			    	                }
+			    	            	
+			    	            };
+			    	            img.src = URL.createObjectURL(uploadFile); 
+    	    					return true;						     
+    	    				}else{
+    	    					alert("ocurrio un error, cierre sesión e ingrese de Nuevo.")
+    	    					document.getElementById('cargando').style.display = 'none';
+    	    					$("#btnAltaImg").css('display','none')
+    	    					$("#preview").css('display','none')
+    	    					$("#preview").html('')
+    	    					$("#fileImagen").val('')
+    	    					return false;
+    	    				}
+   					
+    	    			},
+    	    			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+    	    			{								
+    	    				return false;
+    	    				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+    	    			} 
+    	    		});      	       
+    	        }
+    	 }
+    	 if(tipoImg == ''){
+    		 bootbox.alert({
+				    message: 'Seleccione un tipo de Imagen y Ecommerce',
+				    size: 'small'
+				});
+    		 fileInput.value = '';
+    		 return false; 
+    	 }
+    	 
+    }
+    //var uploadFile = obj.files[0];
+    
+}
+
+function validaActivaEcommerce(){
+	var fileInput = $("#fileImagen2").val()
+	if(fileInput == '' || fileInput == null){
+		alert("Seleccione algun archivo de Imagen")
+		document.getElementById('cargando').style.display = 'none';
+		return false;
+	}else{
+		return true;
+	}
+}
+
+function validarImagenes2(obj){
+	$("#preview2").html('');
+	var extImg = $("#idEcommerceAct").val();
+	
+	var fileInput = document.getElementById('fileImagen2');
+    var filePath = fileInput.value;
+   // var uploadFile = obj.files[0];
+   // alert("Arreglo de Imagenes: "+obj.files.length)
+    //var i = 0;
+    var j = 0;
+    for(var i = 0; i < obj.files.length; i++) 
+    {
+    	 var uploadFile = obj.files[parseInt(i)];
+    	 
+    	if(extImg.toLowerCase() == 'png'){
+    		if (!(/\.(png)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: [ '+extImg +'] '+ uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview2').css('display', 'block');
+                            document.getElementById('preview2').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }    		
+    	}
+    	if(extImg.toLowerCase() == 'jpg'){
+    		if (!(/\.(jpg)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: [ '+extImg +'] '+ uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview2').css('display', 'block');
+                            document.getElementById('preview2').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }    		
+    	}
+    	if(extImg.toLowerCase() == 'tif'){
+    		if (!(/\.(tif)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: [ '+extImg +'] '+ uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview2').css('display', 'block');
+                            document.getElementById('preview2').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }    		
+    	}
+    	if(extImg.toLowerCase() == 'jpeg'){
+    		if (!(/\.(jpeg)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: [ '+extImg +'] '+ uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview2').css('display', 'block');
+                            document.getElementById('preview2').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }    		
+    	}
+    }
+}
+
+function guardaNombreImagenServ(){
+	 var nomImgActualizar = $("#nomImgActualizar").text();
+	 var idEcommActualizar = $("#idEcommActualizar").val();
+	 var parametros = "accion=GuardaNombreReemplazo&nombreImagenActualiza="+nomImgActualizar+"&idEcommActualizar="+idEcommActualizar;
+	 $.ajax({			
+			url :'ImagenServlet',                               // URL al que vamos a hacer el pedido
+			data : parametros,  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+			type : 'POST',                                // tipo de request que estamos generando
+			dataType : 'json', 
+			 beforeSend: function () {
+	             $('body').addClass('loading'); //Agregamos la clase loading al body
+	         },// formato de transmición de datos que recibimos del server
+			success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+			{ 
+				return true;
+			},
+			error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+			{								
+				return false;
+				// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+			} 
+		}); 
+}
+
+function validarImagenes3(obj){
+	$("#preview3").html('');
+	var fileInput = document.getElementById('fileImagen3');
+    var filePath = fileInput.value;
+    var nomImgActualizar = $("#nomImgActualizar").text();
+   // var uploadFile = obj.files[0];
+    //var i = 0;
+    var nombreA = nomImgActualizar.split(".");
+    var j = 0;
+    for(var i = 0; i < obj.files.length; i++) 
+    {
+    	 var uploadFile = obj.files[parseInt(i)];
+    	if(nombreA[1] == 'jpg'){
+    		if (!(/\.(jpg)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: <b>['+nombreA[1]+']</b> ' + uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview3').css('display', 'block');
+                            document.getElementById('preview3').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }
+    	} 
+    	else if(nombreA[1] == 'jpeg')
+    	{
+    		if (!(/\.(jpeg)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: <b>['+nombreA[1]+']</b> ' + uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview3').css('display', 'block');
+                            document.getElementById('preview3').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }
+    	} 
+    	else if(nombreA[1] == 'png')
+    	{
+    		if (!(/\.(png)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: <b>['+nombreA[1]+']</b> ' + uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview3').css('display', 'block');
+                            document.getElementById('preview3').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }
+    	} 
+    	else if(nombreA[1] == 'tif')
+    	{
+    		if (!(/\.(tif)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: <b>['+nombreA[1]+']</b> ' + uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview3').css('display', 'block');
+                            document.getElementById('preview3').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }
+    	}
+    	else
+    	{
+    		bootbox.alert({
+			    message: "El archivo Adjunto NO es una IMAGEN. Favor de Volver a Intentar" +  fileInput.files[parseInt(j)].name,
+			    //size: 'small'
+			});
+    		return false;
+    	}
+    }
+}

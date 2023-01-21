@@ -1,0 +1,5 @@
+package cdo.Persistencia;
+
+public class GestorCatalogoUsuarios {
+
+}

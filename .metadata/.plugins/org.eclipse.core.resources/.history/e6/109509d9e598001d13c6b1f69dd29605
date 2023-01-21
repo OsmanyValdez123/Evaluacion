@@ -1,0 +1,126 @@
+package cdo.Persistencia;
+
+import java.util.ArrayList;
+import java.util.List;
+import cdo.Datos.Usuarios;
+
+public class GestorCatalogoUsuarios {
+
+	public List<Usuarios> obtieneDatosUsuarios() {
+		List<Usuarios> lstUsu =  new ArrayList<>();
+		try {
+			Usuarios usu = new Usuarios();
+				usu.setId(10);
+				usu.setNombre("Jose");
+				usu.setEmail("jose@prueba");
+				usu.setGenero("Masculino");
+				usu.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu2 = new Usuarios();
+				usu2.setId(10);
+				usu2.setNombre("Jose");
+				usu2.setEmail("jose@prueba");
+				usu2.setGenero("Masculino");
+				usu2.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu3 = new Usuarios();
+				usu3.setId(10);
+				usu3.setNombre("Jose");
+				usu3.setEmail("jose@prueba");
+				usu3.setGenero("Masculino");
+				usu3.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu4 = new Usuarios();
+				usu4.setId(10);
+				usu4.setNombre("Jose");
+				usu4.setEmail("jose@prueba");
+				usu4.setGenero("Masculino");
+				usu4.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu5 = new Usuarios();
+				usu5.setId(10);
+				usu5.setNombre("Jose");
+				usu5.setEmail("jose@prueba");
+				usu5.setGenero("Masculino");
+				usu5.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu6 = new Usuarios();
+				usu6.setId(10);
+				usu6.setNombre("Jose");
+				usu6.setEmail("jose@prueba");
+				usu6.setGenero("Masculino");
+				usu6.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu7 = new Usuarios();
+				usu7.setId(10);
+				usu7.setNombre("Jose");
+				usu7.setEmail("jose@prueba");
+				usu7.setGenero("Masculino");
+				usu7.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu8 = new Usuarios();
+				usu8.setId(10);
+				usu8.setNombre("Jose");
+				usu8.setEmail("jose@prueba");
+				usu8.setGenero("Masculino");
+				usu8.setEstatus(200);
+			lstUsu.add(usu);
+			Usuarios usu9 = new Usuarios();
+				usu9.setId(10);
+				usu9.setNombre("Jose");
+				usu9.setEmail("jose@prueba");
+				usu9.setGenero("Masculino");
+				usu9.setEstatus(200);
+			lstUsu.add(usu9);
+			Usuarios usu10 = new Usuarios();
+				usu10.setId(10);
+				usu10.setNombre("Jose");
+				usu10.setEmail("jose@prueba");
+				usu10.setGenero("Masculino");
+				usu10.setEstatus(200);
+			lstUsu.add(usu10);
+			Usuarios usu11 = new Usuarios();
+				usu11.setId(10);
+				usu11.setNombre("Jose");
+				usu11.setEmail("jose@prueba");
+				usu11.setGenero("Masculino");
+				usu11.setEstatus(200);
+			lstUsu.add(usu11);
+			Usuarios usu12 = new Usuarios();
+				usu12.setId(10);
+				usu12.setNombre("Jose");
+				usu12.setEmail("jose@prueba");
+				usu12.setGenero("Masculino");
+				usu12.setEstatus(200);
+			lstUsu.add(usu12);
+			Usuarios usu13 = new Usuarios();
+				usu13.setId(10);
+				usu13.setNombre("Jose");
+				usu13.setEmail("jose@prueba");
+				usu13.setGenero("Masculino");
+				usu13.setEstatus(200);
+			lstUsu.add(usu13);
+			Usuarios usu14 = new Usuarios();
+				usu14.setId(10);
+				usu14.setNombre("Jose");
+				usu14.setEmail("jose@prueba");
+				usu14.setGenero("Masculino");
+				usu14.setEstatus(200);
+			lstUsu.add(usu14);
+			Usuarios usu15 = new Usuarios();
+			usu15.setId(10);
+			usu15.setNombre("Pepe");
+			usu15.setEmail("pepe@prueba");
+			usu15.setGenero("Masculino");
+			usu15.setEstatus(200);
+			lstUsu.add(usu15);
+			
+			
+			
+		}catch(Exception e) {
+			
+		}
+		return lstUsu;
+	}
+	
+}

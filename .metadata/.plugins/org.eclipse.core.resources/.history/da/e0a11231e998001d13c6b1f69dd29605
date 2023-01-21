@@ -1,0 +1,27 @@
+function cargaCatalogoUsuarios(){
+	$.ajax({			
+		url :'CatalogoUsuarios',                               // URL al que vamos a hacer el pedido
+		data : "vista=consultaUsuarios",  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', 
+		 beforeSend: function () {
+             $('body').addClass('loading'); //Agregamos la clase loading al body
+         },// formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{    	    		
+			var catalogo = resp.CAT_USU;
+			console.log("rsp ExtImg: "+catalogo[1].id)
+			extImg = ext;
+			$("#idEcommerceAct").val(extImg)
+			$("#extImgCarga").text(" Tipo de Imagen: "+ extImg)
+			$("#articuloActivar").text('"'+data.numParte+'"')
+			muestraCargaImagen();  
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{								
+			alert("Error al consultar CatalogoUsuarios.")
+			return false;			
+			// alert("Error al consultar Ingesos." + xhr + ". Status:" + status + "error: " + error);		
+		} 
+	});  
+}

@@ -1,0 +1,139 @@
+package cdo.Web;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
+
+import cdo.Datos.Usuarios;
+import cdo.Persistencia.GestorCatalogoUsuarios;
+
+public class CatalogoUsuariosServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+   public CatalogoUsuariosServlet() {
+        super();
+    }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(true);
+		GeneraRespuestas(request, response , session);
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+	
+
+	private void GeneraRespuestas(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		String vista = request.getParameter("vista");
+		System.out.println("vistaCatalogo: " + vista);
+		try { 
+			switch(vista) {
+				case "editaUsuario":
+					String id_usu = request.getParameter("id_usu");
+					String nombre_usu = request.getParameter("nombre_usu");
+					String email_usu = request.getParameter("email_usu");
+					String genero_usu = request.getParameter("genero_usu");
+					String estatus_usu = request.getParameter("estatus_usu"); 
+					System.out.println("id_usu: "+id_usu);
+					System.out.println("nombre_usu: " +nombre_usu);
+					System.out.println("email_usu: " + email_usu);
+					System.out.println("genero_usu: " + genero_usu);
+					System.out.println("estatus_usu: " +estatus_usu);
+					session.setAttribute("id_usu", id_usu);
+					session.setAttribute("nombre_usu", nombre_usu);
+					session.setAttribute("email_usu", email_usu);
+					session.setAttribute("genero_usu", genero_usu);
+					session.setAttribute("estatus_usu", estatus_usu);
+					
+					RedireccionarVista(request, response, "DetalleUsuario.jsp");
+				break;	
+				case "ActualizaUsuario":
+					System.out.println("Entra ActualizaUsuario");
+					List<Usuarios> lstUsuActualizado = actualizaUsuario(request,response,session);
+					int id = Integer.parseInt(request.getParameter("idUsuAct"));
+					session.setAttribute("CAT_USU", lstUsuActualizado); 
+					session.setAttribute("MensajeRespuesta", "Usuario Actualizado Correctamente: ID " + id);
+					RedireccionarVista(request, response, "CatalogoUsuarios.jsp");
+				break;	
+				case "eliminaUsuario":
+					System.out.println("Entra ActualizaUsuario");
+					List<Usuarios> lstUsuEliminado = eliminaUsuario(request,response,session);
+					int idEliminado = Integer.parseInt(request.getParameter("idUsuAct"));
+					session.setAttribute("CAT_USU", lstUsuEliminado); 
+					session.setAttribute("MensajeRespuesta", "Usuario Eliminado Correctamente: ID " + idEliminado);
+					RedireccionarVista(request, response, "CatalogoUsuarios.jsp");
+				break;
+				case "regresarCatalogo":
+					session.setAttribute("MensajeRespuesta","");
+					RedireccionarVista(request, response, "CatalogoUsuarios.jsp");
+				break;
+			}
+		}catch(Exception e) {
+			System.out.println("Error en el Menu de Opciones: " + e.toString()); 
+		}
+	}
+
+	private List<Usuarios> actualizaUsuario(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		GestorCatalogoUsuarios cat = new GestorCatalogoUsuarios();
+		System.out.println("Entra a actualizaUsuarioMeetodo");
+		int idUsuAct = Integer.parseInt(request.getParameter("idUsuAct"));
+		System.out.println("idUsuAct: " + idUsuAct);
+		String email = request.getParameter("txtEmailAct");
+		System.out.println("email: "+email);
+		String genero = request.getParameter("txtGeneroAct");
+		System.out.println("genero: " + genero);
+		String nombre = request.getParameter("txtNombreAct");
+		System.out.println("nombre " + nombre);
+		int estatus = Integer.parseInt(request.getParameter("slcEstatusAct"));
+		System.out.println("estatus: "+estatus);
+		
+		List<Usuarios> lstUsu = new ArrayList<>();
+		try {
+			lstUsu = cat.actualizaDatosUsuario(idUsuAct,estatus,email,genero,nombre);
+		}catch(Exception e) {
+			System.out.println("Error en actualizaUsuario. " + e.toString());
+		} 
+		return lstUsu;
+		
+	}
+
+	private void enviarRespuestaJsonJS(HttpServletRequest request, HttpServletResponse response, String listaJson)
+	{
+		try
+		{
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.write(listaJson);	
+			System.out.println("Salida de JSON");
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Error al re-direccionar vista." + ex.getMessage().toString());
+		}
+	}
+	public void RedireccionarVista(HttpServletRequest request, HttpServletResponse response, String vista)
+	{
+		try
+		{
+			RequestDispatcher rdIndex = request.getRequestDispatcher("jsp/" + vista);			    	
+		    rdIndex.forward(request, response);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Error al re-direccionar vista." + ex.getMessage().toString());
+		}
+	}
+
+}

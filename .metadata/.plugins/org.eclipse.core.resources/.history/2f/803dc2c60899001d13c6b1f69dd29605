@@ -1,0 +1,152 @@
+function cargaCatalogoUsuarios(){
+	$.ajax({			
+		url :'CatalogoUsuarios',                               // URL al que vamos a hacer el pedido
+		data : "vista=consultaUsuarios",  // Paso de parametros, para pasar en JSON es -- >  JSON.stringify(dataSend) donde: dataSend = { uname: unm };   
+		type : 'POST',                                // tipo de request que estamos generando
+		dataType : 'json', 
+		 beforeSend: function () {
+             $('body').addClass('loading'); //Agregamos la clase loading al body
+         },// formato de transmición de datos que recibimos del server
+		success : function(resp)                          // función que va a ejecutar si el pedido fue exitoso				
+		{    	    		
+			alert("Entra a catalogo")
+			var catalogo = resp.CAT_USU;
+				cargaTablaUsuarios(catalogo);
+		},
+		error : function(xhr, status, error)            // función que va a ejecutar si  hubo algun error
+		{								
+			return false;			
+		} 
+	});  
+	
+	function muestraInputCorreo(){
+		$("#txtCorreoAlternativo").css('display','block')
+	}
+	function validarImagenes(){
+	var fileInput = document.getElementById('fileImagenAct');
+    var filePath = fileInput.value;
+     var j = 0;
+    for(var i = 0; i < obj.files.length; i++) 
+    {
+    	 var uploadFile = obj.files[parseInt(i)];
+    	
+    		if (!(/\.(jpg|png|jpeg)$/i).test(uploadFile.name)) {
+        		bootbox.alert({
+    			    message: 'El archivo a adjuntar no es una imagen: ' + uploadFile.name,
+    			    size: 'small'
+    			});
+        		fileInput.value = '';
+        		//alert('El archivo a adjuntar no es una imagen: ' + uploadFile.name);          
+            }
+        	else 
+            {
+                var img = new Image();
+                img.onload = function () {            	            	
+                    if (parseInt(this.width.toFixed(0)) != 1400 || parseInt(this.height.toFixed(0)) != 500) {
+                    	bootbox.alert({
+        				    message: "Las medidas deben ser: 1200 * 1200 pixeles: <br> Revisar la Img: <b>" +  fileInput.files[parseInt(j)].name,
+        				    //size: 'small'
+        				});
+                       
+                        fileInput.value = '';
+                        return false;
+                    }
+                    else if (fileInput.files && fileInput.files[parseInt(j)]) {                	
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                      	   $('#preview3').css('display', 'block');
+                            document.getElementById('preview3').innerHTML += '<img src="'+e.target.result+'" width="50%" height="50%"/>';
+                        };
+                        reader.readAsDataURL(fileInput.files[parseInt(j)]);
+                        j = j+1;
+                    }
+                	
+                };
+                img.src = URL.createObjectURL(uploadFile);       	       
+            }
+    	 
+      }
+	}
+	function cargaTablaUsuarios(catalogo){
+		
+			var db =
+		    {
+		        loadData: function (filter)/** seccion de filtros **/
+		        {
+		            return $.grep(catalogo, function (cat) {
+		                return  (!filter.id.toUpperCase() || cat.id.toUpperCase() === filter.id.toUpperCase() || cat.id.toUpperCase() == filter.id.toUpperCase() || cat.id.toUpperCase().includes(filter.id.toUpperCase()))
+		                 		&& (!filter.nombre.toUpperCase() || cat.nombre.toUpperCase() === filter.nombre.toUpperCase() || cat.nombre.toUpperCase() == filter.nombre.toUpperCase() || cat.nombre.toUpperCase().includes(filter.nombre.toUpperCase()))
+		                 		&& (!filter.email.toUpperCase() || cat.email.toUpperCase() === filter.email.toUpperCase() || cat.email.toUpperCase() == filter.email.toUpperCase() || cat.email.toUpperCase().includes(filter.email.toUpperCase()))
+		                 		&& (!filter.genero.toUpperCase() || cat.genero.toUpperCase() === filter.genero.toUpperCase() || cat.genero.toUpperCase() == filter.genero.toUpperCase() || cat.genero.toUpperCase().includes(filter.genero.toUpperCase()))
+		                 		&& (!filter.estatus.toUpperCase() || cat.estatus.toUpperCase() === filter.estatus.toUpperCase() || cat.estatus.toUpperCase() == filter.estatus.toUpperCase() || cat.estatus.toUpperCase().includes(filter.estatus.toUpperCase()))
+		                 		
+		            });
+		        },
+		     };
+			 window.db = db;
+		     db.catalogo;
+		     
+		     $(function ()
+		     {
+		    	 $("#gridTablaUsuarios").jsGrid({
+		    		 width: "100%",
+		             height: "600px",
+		             editing: false,
+		             filtering: true,
+		             sorting: true,
+		             paging: true,
+		             pageSize: 10,
+		             controller: 
+		             {
+		                 loadData: function () 
+		                 {
+		                     dataType: "json"
+		                     return data;
+		                 },
+		             },
+		             autoload: true,
+		             confirmDeleting: false,
+		             controller: db,
+		             
+		             onRefreshed: function (args) { 
+		            	
+		             },
+		             fields: 
+		             [
+		                 { name: "id", type: "text",title: "ID", /*width: 50,*/ align: 'center', filtering: true},
+		                 { name: "nombre",  type: "text", title: "NOMBRE",/* width: 10,*/ align: 'center', filtering: false},
+		                 { name: "email", type: "text", title: "EMAIL", /*width:20,*/ align: 'center', filtering: false},
+		                 { name: "genero", type: "text", title: "GENERO", /*width:20,*/ align: 'center', filtering: false},
+		                 { name: "estatus",  type: "text", title: "ESTATUS", width: 40, align: 'center',  inserting: false, filtering: false, 
+		                	 itemTemplate: function (value,item) {
+		                		if(item.estatus = 200) {
+		                			return 'ACTIVO';
+		                		}else{
+		                			return 'INACTIVO';
+		                		}		                 		 		
+		                	 }
+		                 },
+		                 { name: "",  type: "text", title: "", width: 40, align: 'center',  inserting: false, filtering: false, 
+		                	 itemTemplate: function (value,item) {
+		                		
+		                		 $("<button>").attr("class", "btn btn-danger").text("Eliminar").on("click", function () {
+	    	                         EliminaUsuario(item);
+	    	                         return false;
+	    	                     });
+		                			                 		 		
+		                	 }
+		                 },
+		                 { name: "",  type: "text", title: "", width: 40, align: 'center',  inserting: false, filtering: false, 
+		                	 itemTemplate: function (value,item) {
+		                		 $("<button>").attr("class", "btn btn-info").text("Ver Detalle").on("click", function () {
+	    	                         VerDetalle(item);
+	    	                         return false;
+	    	                     });	                 		 		
+		                	 }
+		                 },
+		        	 ],        	 
+		    	 });
+		     });
+	}
+	
+}

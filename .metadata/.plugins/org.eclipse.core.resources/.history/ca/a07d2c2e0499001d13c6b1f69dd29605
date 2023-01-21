@@ -1,0 +1,35 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Ejercicio de Evaluacion</title>
+</head>
+<body>
+	<div class="container">
+	<nav class="navbar navbar-light bg-light">
+  		<a class="navbar-brand" href="">Edita Usuario </a>
+	</nav>
+	<img alt="imagenUsuario" src="Images/usuarioLogo.png" style="width: 80px;height:80px">
+	<br>
+	Nombre: <br>
+	<input type="text" id="txtNombreAct" value="${nombre_usu}"> <br>
+	Genero: <br>
+	<input type="text" id="txtGeneroAct" value="${genero_usu}"> <br>
+	Email: <br>
+	<input type="text" id="txxEmailAct" value="${email_usu}"> <br>
+	Estatus: <br>
+	<select>
+		<option id="1" value="200">Activo</option>
+		<option id="2" value="500">Inactivo</option>
+	</select>
+	<br>
+	Subir Archivo: <br>
+	<input type="file" id="fileImagen">
+	
+	<button type="button" class="btn btn-success">Actualizar</button>
+	<button type="button" class="btn btn-info">Cancelar</button>
+	</div>
+</body>
+</html>
